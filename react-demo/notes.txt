@@ -1,0 +1,17 @@
+creating object class with blueprint
+
+class User {
+    constructor(name, age) {
+        this.namne = name;
+        this.age = age;
+    }
+
+    greet() {
+        console.log('Hi!);
+    }
+}
+
+const user1 = new User("Manuel", 35);
+
+git config --global user.email "claudiacole1996@gmail.com"
+git config --global user.name "Claudia McCarter"
