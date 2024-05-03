@@ -8,3 +8,23 @@
 
 //when data changes on screen run loop
 
+
+let onloadReady = false;
+
+window.onload = (e) => {
+    console.log('The page is loaded.');
+    onloadReady = true;
+}
+
+if ( onloadReady == true ) {
+    console.log("The page is fully loaded");
+
+    let truckPriceTotal = 0.00;
+
+    function appendPopUpBox () {
+        const parentContainer = document.getElementsByClassName('page-title')[0];
+        console.log(parentContainer);
+    }
+
+    appendPopUpBox();
+}
