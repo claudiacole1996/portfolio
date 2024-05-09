@@ -13,11 +13,6 @@ let onloadReady = false;
 
 window.onload = (e) => {
     console.log('The page is loaded.');
-    onloadReady = true;
-}
-
-if ( onloadReady == true ) {
-    console.log("The page is fully loaded");
 
     let truckPriceTotal = 0.00;
 
