@@ -12,8 +12,44 @@
 // style update button
 // bug test extension for any missing errors
 
-//get json file
+//get json file (temporarily hard coded)
 let data = [
+  {
+    "wren number" : "29009",
+    "price/case" : "$18.64"
+  },
+  {
+    "wren number" : "6043009",
+    "price/case" : "$21.97"
+  },
+  {
+    "wren number" : "7495014",
+    "price/case" : "$38.38"
+  },
+  {
+    "wren number" : "18645029",
+    "price/case" : "$99.47"
+  },
+  {
+    "wren number" : "18645030",
+    "price/case" : "$99.47"
+  },
+  {
+    "wren number" : "19115000",
+    "price/case" : "$99.47"
+  },
+  {
+    "wren number" : "19186000",
+    "price/case" : "$99.47"
+  },
+  {
+    "wren number" : "19265000",
+    "price/case" : "$99.47"
+  },
+  {
+    "wren number" : "13334028",
+    "price/case" : "$56.62"
+  },
   {
    "wren number" : "1869",
    "price/case" : "$8.70"
@@ -603,7 +639,7 @@ let data = [
   {"wren number" : 
     
     "2760012",
-    "price/case" : "$0.00"
+    "price/case" : "$28.08"
   },
   {"wren number" : 
     
@@ -713,7 +749,7 @@ let data = [
   {"wren number" : 
     
     "3910050",
-    "price/case" : "$0.00"
+    "price/case" : "$36.60"
   },
   {"wren number" : 
     
@@ -1142,8 +1178,8 @@ let data = [
   },
   {"wren number" : 
     
-    "10958550",
-    "price/case" : "$0.00"
+    "10958742",
+    "price/case" : "$22.70"
   },
   {"wren number" : 
     
@@ -1262,8 +1298,8 @@ let data = [
   },
   {"wren number" : 
     
-    "13229515",
-    "price/case" : "$0.00"
+    "13229529",
+    "price/case" : "$35.35"
   },
   {"wren number" : 
     
@@ -1279,6 +1315,11 @@ let data = [
     
     "13825006",
     "price/case" : "$23.89"
+  },
+  {"wren number" : 
+    
+    "13826005",
+    "price/case" : "$55.07"
   },
   {"wren number" : 
     
@@ -1544,58 +1585,162 @@ let data = [
     "price/case" : "$34.97"
   }
 ]
+//checking to see if on correct page
 
 //allowing page to load all content before running
 setTimeout(function() {
-  //visualize when function runs
-  console.log('This is loaded last');
+  //get tabset for event listener
+  const tabSet = document.querySelector('.c-select-orders-tab');
+  console.log(tabSet);
+  const ul = tabSet.querySelector('ul');
+  console.log(ul);
+  const li = ul.getElementsByTagName('LI');
+  console.log(li);
+  li[1].onclick = function() {
+    //get table data
+      const tab = document.querySelector('#tab-2');
+      const table = tab.querySelector('table');
+      const tableBody = table.querySelector('tbody');
+      const rows = tableBody.getElementsByTagName('TR');
 
-  //get table data
-  const tab = document.querySelector('#tab-2');
-  const table = tab.querySelector('table');
-  const tableBody = table.querySelector('tbody');
-  const rows = tableBody.getElementsByTagName('TR');
+      //empty array for created object data
+      let tableData = [];
+      //empty array for missing wren numbers in data or no price
+      let cantCompute = [];
+      //money currency
+      let USDollar = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      });
 
-  //empty array for created object data
-  let tableData = [];
-  //empty array for missing wren numbers in data or no price
-  let cantCompute = [];
-  //money currency
-  let USDollar = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  });
-
-  //function to get all rows into custom objects to add price to
-  function appendData () {
-      for (i=0; i<rows.length; i++) {
-          let object = {};
-          let row = rows[i].getElementsByTagName('TD');
-          object.id = Number(row[1].textContent);
-          object.qnt = Number(row[4].textContent);
-          function getPrice() {
-            let arr = data.map(a => Number(a["wren number"]));
-            let result = 0;
-            if (arr.includes(object.id)) {
-              return result = Number((data.find(x => x["wren number"] === row[1].textContent)["price/case"]).replace("$", ""));
-            } else { return result; }
+      //function to get all rows into custom objects to add price to
+      function appendData () {
+          for (i=0; i<rows.length; i++) {
+              let object = {};
+              let row = rows[i].getElementsByTagName('TD');
+              object.id = Number(row[1].textContent);
+              object.qnt = Number(row[4].textContent);
+              function getPrice() {
+                let arr = data.map(a => Number(a["wren number"]));
+                let result = 0;
+                if (arr.includes(object.id)) {
+                  result = Number((data.find(x => x["wren number"] === row[1].textContent)["price/case"]).replace("$", ""));
+                  if (result === 0) {
+                    cantCompute.push(object.id);
+                  }
+                  return result;
+                } else {
+                  cantCompute.push(object.id);
+                  return result;
+                }
+              }
+              object.price = getPrice();
+              object.priceTimesQnt = ((object.price * 100) * object.qnt) / 100;
+              tableData.push(object);
           }
-          object.price = getPrice();
-          object.priceTimesQnt = ((object.price * 100) * object.qnt) / 100;
-          tableData.push(object);
+      }
+      //call function to create array
+      appendData();
+      console.log(tableData);
+      console.log(cantCompute);
+
+      //get total of truck cost by adding numbers
+      function getTotal() {
+        let result = 0;
+        for (i=0; i<tableData.length; i++) {
+          result += parseFloat(tableData[i].priceTimesQnt);
+        }
+        return USDollar.format(result);
+      }
+      const total = getTotal();
+      console.log(total);
+
+      //append all data to the DOM
+      function addToDom () {
+        const parentDiv = document.querySelector(".breadcrumb-wrapper");
+        const appendedDiv = document.createElement('div');
+        //style the appendedDiv
+        appendedDiv.style.position = "relative";
+        appendedDiv.style.float = "right";
+        appendedDiv.style.top = "0";
+        appendedDiv.style.right = "0";
+        appendedDiv.style.width = "25%";
+        //append div
+        parentDiv.parentNode.insertBefore(appendedDiv, parentDiv.nextSibling);
+
+        //truck price div
+        const priceDiv = document.createElement('div');
+        appendedDiv.appendChild(priceDiv);
+        priceDiv.style.color = "white";
+        //content for truck price div
+        const h1 = document.createElement('h1');
+        h1.textContent = "Total Price:"
+        h1.style.fontSize = "18px"
+        const h2 = document.createElement('h2');
+        h2.textContent = `${total}`;
+        h2.style.fontSize = "20px";
+        priceDiv.appendChild(h1);
+        priceDiv.appendChild(h2);
+
+        //missing wren number div
+        const missingPriceDiv = document.createElement('div');
+        missingPriceDiv.style.position = "relative";
+        missingPriceDiv.style.display = "inline-block";
+        appendedDiv.appendChild(missingPriceDiv);
+        
+        //dropdown button
+        const dropDownButton = document.createElement('button');
+        dropDownButton.textContent = "Missing Prices On Wren Numbers";
+        dropDownButton.classList.add('dropdownBtn');
+        dropDownButton.style.backgroundColor = "#0099FF";
+        dropDownButton.style.padding = "10px";
+        dropDownButton.style.border = "none";
+        dropDownButton.style.position = "relative";
+        dropDownButton.style.zIndex = "100";
+        missingPriceDiv.appendChild(dropDownButton);
+        //dropdown div
+        const missingPriceDropdownDiv = document.createElement('div');
+        missingPriceDiv.appendChild(missingPriceDropdownDiv);
+        missingPriceDropdownDiv.classList.add('drop-content');
+        missingPriceDropdownDiv.style.display = "none";
+        missingPriceDropdownDiv.style.position = "absolute";
+        missingPriceDropdownDiv.style.backgroundColor = "white";
+        missingPriceDropdownDiv.style.boxShadow = "0px 8px 16px 0px rgba(0,0,0,0.2)";
+        missingPriceDropdownDiv.style.zIndex = "1";
+        missingPriceDropdownDiv.style.right = "0";
+        missingPriceDropdownDiv.style.width = "50%";
+        //drop down button function
+        dropDownButton.onclick = function() {
+          if (missingPriceDropdownDiv.style.display === "block") {
+            missingPriceDropdownDiv.style.display = "none"
+          } else {
+            missingPriceDropdownDiv.style.display = "block";
+          }
+        };
+
+        //add all wren numbers with no price or missing from data sheet
+        for (i=0; i<cantCompute.length; i++) {
+          let span = document.createElement('span');
+          span.textContent = cantCompute[i];
+          span.style.color = "black";
+          span.style.padding = "5px 10px";
+          span.style.display = "block";
+          missingPriceDropdownDiv.appendChild(span);
+        }
+      }
+      addToDom();
+
+      window.onclick = function(e) {
+        if (!e.target.matches('.dropdownBtn')) {
+          let drop = document.getElementsByClassName('drop-content');
+          for (i=0; i<drop.length;i++) {
+            let openDrop = drop[i];
+            if (openDrop.style.display === 'block') {
+              openDrop.style.display = "none";
+            }
+          }
+        }
       }
   }
-  //call function to create array
-  appendData();
-  console.log(tableData)
-
-  function getTotal() {
-    let result = 0;
-    for (i=0; i<tableData.length; i++) {
-      result += parseFloat(tableData[i].priceTimesQnt);
-    }
-    return USDollar.format(result);
-  }
-  const total = getTotal();
-  console.log(total);
+  
 }, 5000);
