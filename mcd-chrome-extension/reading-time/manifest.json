@@ -1,13 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "Truck Order Invoice Total Cost",
+    "name": "SyncExtension",
     "version": "1.0",
     "description": "Add the total cost of truck invoice in real time as item quantities are editted for order.",
     "permissions": ["storage", "tabs"],
 
     "content_scripts": [
         {
-            "js": ["scripts/test.js"],
+            "js": ["scripts/app.js"],
             "matches": [
                 "https://martinbrower.my.site.com/Sync/s/*"
             ]
