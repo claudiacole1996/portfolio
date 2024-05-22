@@ -1,10 +1,9 @@
 // COMPLETE!  get data from webpage and add to an array
 // COMPLETE!  import sample data to test functions
 // COMPLETE!  total price of truck order
-// append truck price to the webpage
-// style appended div
-// fix extension to run when ALL tab is active
-// or make all tab default
+// COMPLETE!  append truck price to the webpage
+// COMPLETE!  style appended div
+// COMPLETE!  fix extension to run when ALL tab is active
 // run function when item is updated on page
 // use google api to create real time json file
 // get data from pdf recent invoice
@@ -1596,6 +1595,8 @@ setTimeout(function() {
   console.log(ul);
   const li = ul.getElementsByTagName('LI');
   console.log(li);
+  //so div doesn't keep rendering
+  let dataAppened = false;
   li[1].onclick = function() {
     //get table data
       const tab = document.querySelector('#tab-2');
@@ -1623,26 +1624,27 @@ setTimeout(function() {
               function getPrice() {
                 let arr = data.map(a => Number(a["wren number"]));
                 let result = 0;
-                if (arr.includes(object.id)) {
-                  result = Number((data.find(x => x["wren number"] === row[1].textContent)["price/case"]).replace("$", ""));
-                  if (result === 0) {
+                if (object.qnt > 0) {
+                  if (arr.includes(object.id)) {
+                    result = Number((data.find(x => x["wren number"] === row[1].textContent)["price/case"]).replace("$", ""));
+                    if (result === 0) {
+                      cantCompute.push(object.id);
+                    }
+                  } else {
                     cantCompute.push(object.id);
                   }
-                  return result;
-                } else {
-                  cantCompute.push(object.id);
-                  return result;
                 }
+                return result;
               }
               object.price = getPrice();
               object.priceTimesQnt = ((object.price * 100) * object.qnt) / 100;
               tableData.push(object);
           }
       }
-      //call function to create array
-      appendData();
-      console.log(tableData);
-      console.log(cantCompute);
+      //call function to create array if hasn't already
+      if (!dataAppened) {
+        appendData();
+      }
 
       //get total of truck cost by adding numbers
       function getTotal() {
@@ -1677,6 +1679,7 @@ setTimeout(function() {
         h1.textContent = "Total Price:"
         h1.style.fontSize = "18px"
         const h2 = document.createElement('h2');
+        h2.classList.add('truck-total');
         h2.textContent = `${total}`;
         h2.style.fontSize = "20px";
         priceDiv.appendChild(h1);
@@ -1727,8 +1730,29 @@ setTimeout(function() {
           span.style.display = "block";
           missingPriceDropdownDiv.appendChild(span);
         }
+        dataAppened = true;
       }
-      addToDom();
+      if (!dataAppened) {
+        addToDom();
+      }
+
+      /*for (j=0; j<tableData.length; j++) {
+            if (tableData[j].id === Number(row[1])) {
+              tableData[j].qnt = Number(row[4]);
+              let h2 = document.getElementsByClassName('truck-total');
+              h2.textContent = `${total}`;
+              console.log(total);
+            }
+          }*/
+      function ael() {
+        console.log("even listener added");
+      }
+      //update truck price when qnt changes
+      for (i=0; i<rows.length; i++) {
+        let row = rows[i].getElementsByTagName('TD');
+        row[4].addEventListener = ("click", ael)
+        }
+      }
 
       window.onclick = function(e) {
         if (!e.target.matches('.dropdownBtn')) {
@@ -1741,6 +1765,6 @@ setTimeout(function() {
           }
         }
       }
-  }
+ 
   
 }, 5000);
