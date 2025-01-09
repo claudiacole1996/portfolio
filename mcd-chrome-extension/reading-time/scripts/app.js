@@ -38,7 +38,7 @@ setTimeout(function() {
   //so div doesn't keep rendering
   let dataAppened = false;
   li[1].onclick = function() {
-    //get table data
+    //get website table data
       const tab = document.querySelector('#tab-2');
       const table = tab.querySelector('table');
       const tableBody = table.querySelector('tbody');
